@@ -154,6 +154,7 @@ public struct JSON {
                 return self.rawNull
             }
         }
+        /*
         set {
             _error = nil
             switch newValue {
@@ -176,6 +177,38 @@ public struct JSON {
                 _type = .Dictionary
                 self.rawDictionary = dictionary
             default:
+                _type = .Unknown
+                _error = NSError(domain: ErrorDomain, code: ErrorUnsupportedType, userInfo: [NSLocalizedDescriptionKey: "It is a unsupported type"])
+            }
+        }
+        */
+
+        set {
+            _error = nil
+            if let number = newValue as? NSNumber {
+                if number.isBool {
+                    _type = .Bool
+                } else {
+                    _type = .Number
+                }
+                self.rawNumber = number
+            }
+            else if let string = newValue as? String {
+                _type = .String
+                self.rawString = string
+            }
+            else if let _ = newValue as? NSNull {
+                _type = .Null
+            }
+            else if let array = newValue as? [AnyObject] {
+                _type = .Array
+                self.rawArray = array
+            }
+            else if let dictionary = newValue as? [String : AnyObject] {
+                _type = .Dictionary
+                self.rawDictionary = dictionary
+            }
+            else {
                 _type = .Unknown
                 _error = NSError(domain: ErrorDomain, code: ErrorUnsupportedType, userInfo: [NSLocalizedDescriptionKey: "It is a unsupported type"])
             }
